@@ -18,7 +18,7 @@ jobs:
           --user $(id -u):$(id -g) \
           -v ${{ github.workspace }}:/zap/wrk:rw \
           ghcr.io/zaproxy/zaproxy:stable \
-          zap-baseline.py \
+          /zap/zap-baseline.py \
           -t https://crpn.ru:8084 \
           -r zap-report.html \
           -w zap-warnings.txt \
