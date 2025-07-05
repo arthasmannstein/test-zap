@@ -1,18 +1,22 @@
-name: ZAP Baseline Scan via Docker
+name: ZAP Baseline Scan
 
 on:
   workflow_dispatch:
 
 jobs:
-  zap-baseline:
+  zap-scan:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Run ZAP Baseline Docker scan
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Run ZAP Baseline Scan via Docker
       continue-on-error: true
       run: |
         docker run --rm \
-          -v $(pwd):/zap/wrk:rw \
+          --user $(id -u):$(id -g) \
+          -v ${{ github.workspace }}:/zap/wrk:rw \
           ghcr.io/zaproxy/zaproxy:stable \
           zap-baseline.py \
           -t https://crpn.ru:8084 \
