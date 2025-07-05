@@ -26,16 +26,16 @@ jobs:
         name: zap-html-report
         path: zap-report.html
 
+    - name: Upload ZAP Markdown report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: zap-md-report
+        path: zap-report.md
+
     - name: Upload ZAP warnings
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: zap-warnings
         path: zap-warnings.txt
-
-    - name: Upload ZAP Markdown report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: zap-report-md
-        path: zap-report.md
