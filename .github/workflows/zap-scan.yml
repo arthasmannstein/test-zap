@@ -1,4 +1,4 @@
-name: ZAP Baseline Scan (Docker Wrapper)
+name: ZAP Baseline Scan (Docker root fix)
 
 on:
   workflow_dispatch:
@@ -11,10 +11,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Run ZAP Baseline in Docker (suppress exit 3)
+    - name: Run ZAP Baseline Scan via Docker as root
       run: |
         set +e
         docker run --rm \
+          --user root \
           -v ${{ github.workspace }}:/zap/wrk \
           ghcr.io/zaproxy/zaproxy:stable \
           /zap/zap-baseline.py \
