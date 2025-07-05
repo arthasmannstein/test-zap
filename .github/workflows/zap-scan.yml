@@ -1,4 +1,4 @@
-name: ZAP Baseline Scan
+name: ZAP Baseline Scan (Official Action)
 
 on:
   workflow_dispatch:
@@ -11,20 +11,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Run ZAP Baseline Scan via Docker
+    - name: Run ZAP Baseline Scan
       continue-on-error: true
-      run: |
-        docker run --rm \
-          --user $(id -u):$(id -g) \
-          -v ${{ github.workspace }}:/zap/wrk:rw \
-          ghcr.io/zaproxy/zaproxy:stable \
-          /zap/zap-baseline.py \
-          -t https://crpn.ru:8084 \
-          -r zap-report.html \
-          -w zap-warnings.txt \
-          -J zap-report.json \
-          -g zap-report.md \
-          -a -d
+      uses: zaproxy/action-baseline@v0.10.0
+      with:
+        target: 'https://crpn.ru:8084'
+        cmd_options: '-a -d -g zap-report.md -r zap-report.html -w zap-warnings.txt'
+        fail_action: false
 
     - name: Upload ZAP HTML report
       if: always()
@@ -39,13 +32,6 @@ jobs:
       with:
         name: zap-warnings
         path: zap-warnings.txt
-
-    - name: Upload ZAP JSON report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: zap-report-json
-        path: zap-report.json
 
     - name: Upload ZAP Markdown report
       if: always()
