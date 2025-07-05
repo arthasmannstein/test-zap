@@ -1,0 +1,31 @@
+name: ZAP Scan
+
+on:
+  workflow_dispatch:  # Позволяет запускать вручную из UI GitHub
+
+jobs:
+  zap-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Run OWASP ZAP Baseline Scan
+      continue-on-error: true
+      uses: zaproxy/action-baseline@v0.10.0
+      with:
+        target: 'https://crpn.ru:8084'
+        cmd_options: '-a -d -g zap-report.md -r zap-report.html -w zap-warnings.txt'
+        fail_action: false
+
+    - name: Upload ZAP HTML report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: zap-html-report
+        path: zap-report.html
+
+    - name: Upload ZAP warnings
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: zap-warnings
+        path: zap-warnings.txt
