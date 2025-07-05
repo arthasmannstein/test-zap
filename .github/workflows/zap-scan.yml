@@ -1,20 +1,26 @@
-name: ZAP Scan
+name: ZAP Baseline Scan via Docker
 
 on:
-  workflow_dispatch:  # Позволяет запускать вручную из UI GitHub
+  workflow_dispatch:
 
 jobs:
-  zap-scan:
+  zap-baseline:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Run OWASP ZAP Baseline Scan
+    - name: Run ZAP Baseline Docker scan
       continue-on-error: true
-      uses: zaproxy/action-baseline@v0.10.0
-      with:
-        target: 'https://crpn.ru:8084'
-        cmd_options: '-a -d -g zap-report.md -r zap-report.html -w zap-warnings.txt'
-        fail_action: false
+      run: |
+        docker run --rm \
+          -v $(pwd):/zap/wrk:rw \
+          ghcr.io/zaproxy/zaproxy:stable \
+          zap-baseline.py \
+          -t https://crpn.ru:8084 \
+          -r zap-report.html \
+          -w zap-warnings.txt \
+          -J zap-report.json \
+          -g zap-report.md \
+          -a -d
 
     - name: Upload ZAP HTML report
       if: always()
@@ -29,3 +35,17 @@ jobs:
       with:
         name: zap-warnings
         path: zap-warnings.txt
+
+    - name: Upload ZAP JSON report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: zap-report-json
+        path: zap-report.json
+
+    - name: Upload ZAP Markdown report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: zap-report-md
+        path: zap-report.md
